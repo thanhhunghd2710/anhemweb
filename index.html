@@ -9,13 +9,18 @@
 
 body{
 margin:0;
-font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial;
+font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial;
 background:linear-gradient(135deg,#4facfe,#00f2fe);
 min-height:100vh;
 display:flex;
 justify-content:center;
 align-items:flex-start;
 padding:20px;
+
+user-select:none;
+-webkit-user-select:none;
+-moz-user-select:none;
+-ms-user-select:none;
 }
 
 .card{
@@ -56,6 +61,8 @@ font-size:15px;
 cursor:grab;
 transition:all .2s;
 border:1px solid #e2e6ea;
+
+user-select:none;
 }
 
 .sentence:active{
@@ -121,10 +128,12 @@ font-size:14px;
 <body>
 
 <div class="card">
-<h1>Phần ghi nhớ đạp án Part 1</h1>
+
+<h1>Phần ghi nhớ đáp án Part 1</h1>
 <div class="subtitle">1. Morning/Friend/Leave/Good/Food.</div>
 <div class="subtitle">2. Love/Small/Shop/People/Visit.</div>
 <div class="subtitle">3. Station/Stops/Green/Dinner/Films.</div>
+
 <h1>Phần sắp xếp reading! Học đi Thầy Sơn</h1>
 <div class="subtitle">Drag sentences into the correct order</div>
 
@@ -244,63 +253,86 @@ shuffle();
 }
 
 function render(){
+
 list.innerHTML="";
 
 sentences.forEach((s,i)=>{
 
 let div=document.createElement("div");
 div.className="sentence";
-div.draggable=true;
 div.textContent=s;
 div.dataset.index=i;
 
- div.addEventListener("dragstart",dragStart);
- div.addEventListener("dragover",dragOver);
- div.addEventListener("drop",drop);
+div.addEventListener("mousedown",dragStart);
+div.addEventListener("touchstart",dragStart);
 
- list.appendChild(div);
+list.appendChild(div);
 
 });
+
 }
 
-let draggedIndex=null;
+let startIndex=null;
 
-function dragStart(){
-draggedIndex=this.dataset.index;
+function dragStart(e){
+
+startIndex=this.dataset.index;
+
+document.addEventListener("mouseup",dragEnd);
+document.addEventListener("touchend",dragEnd);
+
 }
 
-function dragOver(e){
-e.preventDefault();
+function dragEnd(e){
+
+let x,y;
+
+if(e.changedTouches){
+x=e.changedTouches[0].clientX;
+y=e.changedTouches[0].clientY;
+}else{
+x=e.clientX;
+y=e.clientY;
 }
 
-function drop(){
-let targetIndex=this.dataset.index;
-let temp=sentences[draggedIndex];
+let element=document.elementFromPoint(x,y);
 
-sentences.splice(draggedIndex,1);
+if(element && element.classList.contains("sentence")){
+
+let targetIndex=element.dataset.index;
+
+let temp=sentences[startIndex];
+
+sentences.splice(startIndex,1);
 sentences.splice(targetIndex,0,temp);
 
 render();
+
+}
+
+document.removeEventListener("mouseup",dragEnd);
+document.removeEventListener("touchend",dragEnd);
+
 }
 
 function checkOrder(){
 
 let correct=true;
 
- document.querySelectorAll('.sentence').forEach((el,i)=>{
- if(el.textContent!==correctOrder[i]) correct=false;
- });
+document.querySelectorAll('.sentence').forEach((el,i)=>{
+if(el.textContent!==correctOrder[i]) correct=false;
+});
 
- let result=document.getElementById("result");
+let result=document.getElementById("result");
 
- if(correct){
- result.innerText="✅ Correct!";
- result.className="result correct";
- }
- else{
- result.innerText="❌ Not correct yet. Try again!";
- result.className="result wrong";
- }
+if(correct){
+result.innerText="✅ Correct!";
+result.className="result correct";
+}
+else{
+result.innerText="❌ Not correct yet. Try again!";
+result.className="result wrong";
+}
 
 }
 
