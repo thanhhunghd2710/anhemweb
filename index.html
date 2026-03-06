@@ -2,34 +2,170 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>APTIS Sentence Ordering Game</title>
+
 <style>
-body{font-family:Arial;margin:40px;background:#f4f6f8}
-h2{margin-bottom:5px}
-.container{background:white;padding:20px;border-radius:10px;max-width:900px}
-.sentence{padding:10px;margin:8px 0;background:#e8edf3;border-radius:6px;cursor:grab}
-button{margin-top:15px;padding:10px 15px;border:none;border-radius:6px;background:#4CAF50;color:white;font-size:16px;margin-right:10px}
-select{padding:8px;margin-bottom:15px}
+
+body{
+margin:0;
+font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial;
+background:linear-gradient(135deg,#4facfe,#00f2fe);
+min-height:100vh;
+display:flex;
+justify-content:center;
+align-items:flex-start;
+padding:20px;
+}
+
+.card{
+background:white;
+width:100%;
+max-width:700px;
+border-radius:20px;
+padding:20px;
+box-shadow:0 15px 40px rgba(0,0,0,0.2);
+}
+
+h1{
+font-size:22px;
+margin:0 0 5px 0;
+}
+
+.subtitle{
+color:#666;
+font-size:14px;
+margin-bottom:15px;
+}
+
+select{
+width:100%;
+padding:12px;
+border-radius:10px;
+border:1px solid #ddd;
+font-size:15px;
+margin-bottom:15px;
+}
+
+.sentence{
+padding:14px;
+margin:10px 0;
+background:#f1f4f8;
+border-radius:12px;
+font-size:15px;
+cursor:grab;
+transition:all .2s;
+border:1px solid #e2e6ea;
+}
+
+.sentence:active{
+cursor:grabbing;
+transform:scale(1.02);
+}
+
+.buttons{
+display:flex;
+gap:10px;
+margin-top:15px;
+flex-wrap:wrap;
+}
+
+button{
+flex:1;
+padding:12px;
+border:none;
+border-radius:10px;
+font-size:15px;
+font-weight:600;
+}
+
+.check{
+background:#22c55e;
+color:white;
+}
+
+.shuffle{
+background:#6366f1;
+color:white;
+}
+
+.result{
+margin-top:15px;
+font-weight:600;
+font-size:16px;
+}
+
+.correct{
+color:#16a34a;
+}
+
+.wrong{
+color:#dc2626;
+}
+
+@media (max-width:500px){
+
+h1{
+font-size:20px;
+}
+
+.sentence{
+font-size:14px;
+}
+
+}
+
 </style>
 </head>
+
 <body>
-<div class="container">
-<h2>APTIS Sentence Ordering Practice</h2>
-<p>Choose a topic then drag sentences into the correct order.</p>
+
+<div class="card">
+
+<h1>APTIS Sentence Ordering</h1>
+<div class="subtitle">Drag sentences into the correct order</div>
 
 <select id="topicSelect" onchange="loadTopic()"></select>
 
 <div id="list"></div>
 
-<button onclick="checkOrder()">Check Answer</button>
-<button onclick="shuffle()">Shuffle Again</button>
+<div class="buttons">
+<button class="check" onclick="checkOrder()">Check Answer</button>
+<button class="shuffle" onclick="shuffle()">Shuffle</button>
+</div>
 
-<p id="result"></p>
+<div id="result" class="result"></div>
+
 </div>
 
 <script>
 
 const topics={
+
+"The first American woman in Space":[
+"With the support from her parents, she went to university to study science",
+"Her degree enabled her to get a place on the training course in USA",
+"This is about space, and it helps Mae to become a member of a research team",
+"As part of this group, she traveled to space and did a lot of experiments",
+"Some of those were about growing plants and some animals in a spaceship"
+],
+
+"Music show at the park":[
+"The local authority planned, sponsored, and paid for everything.",
+"Because of this, it was free and five thousand people attended it.",
+"Many of them arrived early and visited nearby shops while they were waiting for it to begin.",
+"The staff there had a busy day, but they were able to close early and watch the famous singer perform.",
+"He performed for two hours and everyone had great fun"
+],
+
+"Making films":[
+"The films in the past were different from what we see today.",
+"This is because the movies were black and white, and there was no sound.",
+"In addition to these technical limitations, film producers also had a very low budget",
+"This lack of money mostly affected actors, and they didn't earn much",
+"Now things have changed, some of them have earned millions of dollars"
+],
+
 "Weekend activities":[
 "It was on Saturday morning, and there was a ten-mile race for adults.",
 "Sixty men and women ran in this, and Ms Kamur won with the fastest time.",
@@ -77,6 +213,7 @@ const topics={
 "During this visit, you will need to stay with these students until lunch break.",
 "This meal will be provided on the second floor of the engineering building"
 ]
+
 };
 
 let correctOrder=[];
@@ -105,7 +242,9 @@ shuffle();
 
 function render(){
 list.innerHTML="";
+
 sentences.forEach((s,i)=>{
+
 let div=document.createElement("div");
 div.className="sentence";
 div.draggable=true;
@@ -117,6 +256,7 @@ div.dataset.index=i;
  div.addEventListener("drop",drop);
 
  list.appendChild(div);
+
 });
 }
 
@@ -133,23 +273,37 @@ e.preventDefault();
 function drop(){
 let targetIndex=this.dataset.index;
 let temp=sentences[draggedIndex];
+
 sentences.splice(draggedIndex,1);
 sentences.splice(targetIndex,0,temp);
+
 render();
 }
 
 function checkOrder(){
-let correct=true;
-document.querySelectorAll('.sentence').forEach((el,i)=>{
- if(el.textContent!==correctOrder[i]) correct=false;
-});
 
-let result=document.getElementById("result");
-result.textContent=correct?"Correct! 🎉":"Not correct yet. Try again!";
+let correct=true;
+
+ document.querySelectorAll('.sentence').forEach((el,i)=>{
+ if(el.textContent!==correctOrder[i]) correct=false;
+ });
+
+ let result=document.getElementById("result");
+
+ if(correct){
+ result.innerText="✅ Correct!";
+ result.className="result correct";
+ }
+ else{
+ result.innerText="❌ Not correct yet. Try again!";
+ result.className="result wrong";
+ }
+
 }
 
 loadTopic();
 
 </script>
+
 </body>
 </html>
