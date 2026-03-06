@@ -1,14 +1,155 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-	<meta charset="utf-8">
-	<link rel="stylesheet" type="text/css" href="anhem.css">
-	<title >Hí anh em</title>
-
+<meta charset="UTF-8">
+<title>APTIS Sentence Ordering Game</title>
+<style>
+body{font-family:Arial;margin:40px;background:#f4f6f8}
+h2{margin-bottom:5px}
+.container{background:white;padding:20px;border-radius:10px;max-width:900px}
+.sentence{padding:10px;margin:8px 0;background:#e8edf3;border-radius:6px;cursor:grab}
+button{margin-top:15px;padding:10px 15px;border:none;border-radius:6px;background:#4CAF50;color:white;font-size:16px;margin-right:10px}
+select{padding:8px;margin-bottom:15px}
+</style>
 </head>
-<div class="tieude"><h1>Chào anh em bạn bè nha!!!!!</h1></div>
-<div class="webcanhan"><a href="https://thanhhunghd2710.github.io/web_ca_nhan/"><img id="anhcuoi" src="https://img.thuthuatphanmem.vn/uploads/2018/09/22/bieu-tuong-hinh-mat-cuoi-2_020027999.png" ><h2>Cick vào đây để truy cập web cá nhân của mình</h2> </a></div>
 <body>
+<div class="container">
+<h2>APTIS Sentence Ordering Practice</h2>
+<p>Choose a topic then drag sentences into the correct order.</p>
 
+<select id="topicSelect" onchange="loadTopic()"></select>
+
+<div id="list"></div>
+
+<button onclick="checkOrder()">Check Answer</button>
+<button onclick="shuffle()">Shuffle Again</button>
+
+<p id="result"></p>
+</div>
+
+<script>
+
+const topics={
+"Weekend activities":[
+"It was on Saturday morning, and there was a ten-mile race for adults.",
+"Sixty men and women ran in this, and Ms Kamur won with the fastest time.",
+"After she received the prize, it was time for the children to play and compete.",
+"These activities included playing football, jumping, and swimming, and they had lots of fun.",
+"After that, all of them were hungry so they ate and drank with their parents"
+],
+
+"New cafe in town":[
+"It was full of people, and the staff were working hard on their 1st day",
+"Despite the crowd, they found me a nice table and brought me a menu",
+"When I first look at the menu, I was disappointed since I hoped to see a variety of dishes",
+"I had to choose one of those so I decided to choose the most expensive one",
+"It was really good with cheese topping and I would come back to this place"
+],
+
+"History of travel":[
+"In the past, only very rich people could afford to travel long distances.",
+"The invention of cars and trains had changed everything and made travelling cheaper.",
+"After these two means of transport, travelling becomes even easier with aeroplanes.",
+"Because flying with them is so fast, more people now go abroad for holiday and business.",
+"It is more convenient to travel to other part of the world due to the improvement in transports"
+],
+
+"Singer":[
+"Before becoming famous at a young age, he studied art and music at high school",
+"During this education, he started to perform on stage.",
+"During his performances on stage, he likes to wear colorful clothes and paint his face.",
+"This strange ways of dressing and his songs attracted people's attention",
+"They started to follow him on social media and he is now very famous"
+],
+
+"End of term project":[
+"For end of term project, you need to choose at least 2 of these",
+"It needs to include relevant images and your own text about the topic",
+"Then you need to use images and written work to create a presentation",
+"Your presentation offer your key points and you have around 5 minutes to talk",
+"After this time, other students are able to ask questions and you need to answer them"
+],
+
+"College welcoming day":[
+"The day will begin at 10 a.m in the morning with a short presentation.",
+"At the end of this talk, you will meet the heads of departments and teachers.",
+"These staff members will give you a guided tour in the buildings and our sport facilities in small groups",
+"During this visit, you will need to stay with these students until lunch break.",
+"This meal will be provided on the second floor of the engineering building"
+]
+};
+
+let correctOrder=[];
+let sentences=[];
+
+const list=document.getElementById("list");
+const topicSelect=document.getElementById("topicSelect");
+
+Object.keys(topics).forEach(t=>{
+let option=document.createElement("option");
+option.value=t;
+option.textContent=t;
+topicSelect.appendChild(option);
+});
+
+function shuffle(){
+sentences=[...correctOrder].sort(()=>Math.random()-0.5);
+render();
+}
+
+function loadTopic(){
+let topic=topicSelect.value;
+correctOrder=[...topics[topic]];
+shuffle();
+}
+
+function render(){
+list.innerHTML="";
+sentences.forEach((s,i)=>{
+let div=document.createElement("div");
+div.className="sentence";
+div.draggable=true;
+div.textContent=s;
+div.dataset.index=i;
+
+ div.addEventListener("dragstart",dragStart);
+ div.addEventListener("dragover",dragOver);
+ div.addEventListener("drop",drop);
+
+ list.appendChild(div);
+});
+}
+
+let draggedIndex=null;
+
+function dragStart(){
+draggedIndex=this.dataset.index;
+}
+
+function dragOver(e){
+e.preventDefault();
+}
+
+function drop(){
+let targetIndex=this.dataset.index;
+let temp=sentences[draggedIndex];
+sentences.splice(draggedIndex,1);
+sentences.splice(targetIndex,0,temp);
+render();
+}
+
+function checkOrder(){
+let correct=true;
+document.querySelectorAll('.sentence').forEach((el,i)=>{
+ if(el.textContent!==correctOrder[i]) correct=false;
+});
+
+let result=document.getElementById("result");
+result.textContent=correct?"Correct! 🎉":"Not correct yet. Try again!";
+}
+
+loadTopic();
+
+</script>
 </body>
 </html>
