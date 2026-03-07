@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Aptis Ordering Game</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:linear-gradient(135deg,#4facfe,#00f2fe);
+margin:0;
+padding:30px;
+display:flex;
+flex-direction:column;
+align-items:center;
+user-select:none;
+}
+
+.game{
+background:white;
+width:850px;
+padding:20px;
+border-radius:10px;
+margin-bottom:40px;
+box-shadow:0 10px 20px rgba(0,0,0,0.2);
+}
+
+.answerKey{
+background:#222;
+color:white;
+padding:8px;
+border-radius:6px;
+margin-bottom:10px;
+display:none;
+text-align:center;
+font-weight:bold;
+}
+
+.showBtn{
+background:#333;
+color:white;
+padding:6px 14px;
+border:none;
+border-radius:6px;
+cursor:pointer;
+margin-bottom:10px;
+}
+
+.container{
+display:flex;
+gap:30px;
+}
+
+.box{
+flex:1;
+border:2px dashed #ddd;
+padding:10px;
+min-height:220px;
+}
+
+.word{
+background:#f1f1f1;
+padding:8px;
+margin:5px;
+border-radius:6px;
+cursor:pointer;
+text-align:center;
+font-weight:bold;
+}
+
+.word:hover{
+background:#d6ecff;
+}
+
+button{
+padding:8px 16px;
+margin-right:10px;
+border:none;
+border-radius:6px;
+background:#ff9800;
+color:white;
+cursor:pointer;
+}
+
+.result{
+margin-top:10px;
+font-weight:bold;
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="games"></div>
+
+<script>
+
+const data=[
+
+{
+correct:["lifestyle","benefits","finance","challenges","habits","people","solutions"],
+noise:["computer","river","music","school","banana","planet","camera","window","pencil","forest","coffee","island","engine","flower","bottle","desert","pillow","market","rocket","guitar","mirror"]
+},
+
+{
+correct:["mountain","achievement","publicly","reveal","mistakes","focus","relationships"],
+noise:["airplane","sandwich","library","football","painter","diamond","airport","battery","castle","umbrella","ticket","piano","factory","kitchen","notebook","traffic","candle","bridge","shampoo","pocket","butter"]
+},
+
+{
+correct:["gender","recognition","man","career","human","balance","beneficial"],
+noise:["television","hospital","waterfall","internet","chocolate","football","printer","holiday","sunlight","backpack","bicycle","language","shopping","calendar","mountain","weather","pyramid","magazine","battery","teacher","airport"]
+}
+
+];
+
+const games=document.getElementById("games");
+
+data.forEach((set,index)=>{
+
+let all=[...set.correct,...set.noise];
+all.sort(()=>Math.random()-0.5);
+
+let game=document.createElement("div");
+game.className="game";
+
+game.innerHTML=`
+
+<h3>Question ${index+1}</h3>
+
+<button class="showBtn">Hold to show answer</button>
+
+<div class="answerKey">${set.correct.join(" → ")}</div>
+
+<div class="container">
+
+<div class="box bank"></div>
+
+<div class="box answer"></div>
+
+</div>
+
+<br>
+
+<button class="checkWords">Check Words</button>
+<button class="checkOrder">Check Order</button>
+
+<div class="result"></div>
+
+`;
+
+games.appendChild(game);
+
+let bank=game.querySelector(".bank");
+let answer=game.querySelector(".answer");
+let result=game.querySelector(".result");
+let answerKey=game.querySelector(".answerKey");
+let showBtn=game.querySelector(".showBtn");
+
+showBtn.onmousedown=()=>answerKey.style.display="block";
+showBtn.onmouseup=()=>answerKey.style.display="none";
+showBtn.onmouseleave=()=>answerKey.style.display="none";
+
+function createWord(text){
+
+let div=document.createElement("div");
+div.className="word";
+div.textContent=text;
+
+div.onclick=()=>{
+
+if(div.parentElement===bank){
+
+if(answer.children.length<7){
+answer.appendChild(div);
+}
+
+}else{
+
+bank.appendChild(div);
+
+}
+
+};
+
+return div;
+
+}
+
+all.forEach(w=>{
+bank.appendChild(createWord(w));
+});
+
+game.querySelector(".checkWords").onclick=()=>{
+
+let arr=[...answer.children].map(e=>e.textContent);
+
+let ok=set.correct.every(w=>arr.includes(w));
+
+result.innerText=ok ? "✅ Correct words!" : "❌ Wrong words";
+
+};
+
+game.querySelector(".checkOrder").onclick=()=>{
+
+let arr=[...answer.children].map(e=>e.textContent);
+
+let ok=true;
+
+for(let i=0;i<set.correct.length;i++){
+if(arr[i]!==set.correct[i]) ok=false;
+}
+
+result.innerText=ok ? "🏆 Perfect Order!" : "❌ Wrong order";
+
+};
+
+});
+
+</script>
+
+</body>
+</html>
