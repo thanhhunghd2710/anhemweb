@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aptis Pro - Hệ thống Học tập Toàn diện</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --sidebar-width: 280px;
+            --primary: #4361ee;
+            --primary-light: #f1f4ff;
+            --secondary: #64748b;
+            --bg-body: #f8fafc;
+            --bg-card: #ffffff;
+            --text-main: #1e293b;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+        }
+
+        * { box-sizing: border-box; transition: all 0.2s ease-in-out; }
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* SIDEBAR NAVIGATION */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: #fff;
+            border-right: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            z-index: 1000;
+        }
+
+        .logo-box {
+            padding: 40px 30px;
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            letter-spacing: -1px;
+        }
+
+        .nav-links { flex: 1; padding: 0 20px; }
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 20px;
+            margin-bottom: 8px;
+            border-radius: 12px;
+            color: var(--secondary);
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .nav-link:hover { background: var(--primary-light); color: var(--primary); }
+        .nav-link.active { background: var(--primary); color: #fff; box-shadow: 0 10px 15px -3px rgba(67, 97, 238, 0.3); }
+
+        /* MAIN CONTENT */
+        .main-wrapper { margin-left: var(--sidebar-width); flex: 1; padding: 50px; max-width: 1200px; }
+        .page-header { margin-bottom: 40px; }
+        .page-header h1 { font-size: 32px; margin: 0 0 10px 0; font-weight: 800; }
+        
+        .part-tabs {
+            display: inline-flex;
+            background: #e2e8f0;
+            padding: 4px;
+            border-radius: 14px;
+            margin-bottom: 30px;
+        }
+        .tab-item {
+            padding: 10px 24px;
+            border-radius: 11px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--secondary);
+        }
+        .tab-item.active { background: #fff; color: var(--primary); box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+
+        .card {
+            background: #fff;
+            border-radius: 24px;
+            padding: 40px;
+            border: 1px solid #f1f5f9;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.02);
+        }
+
+        /* COMPONENT STYLES */
+        select {
+            width: 100%;
+            padding: 16px;
+            border-radius: 14px;
+            border: 2px solid #f1f5f9;
+            background: #f8fafc;
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 30px;
+            outline: none;
+        }
+        select:focus { border-color: var(--primary); }
+
+        /* Part 1 Drag & Drop */
+        .p1-list { margin-bottom: 20px; }
+        .p1-row {
+            background: #fff;
+            border: 2px solid #f1f5f9;
+            padding: 20px;
+            margin-bottom: 12px;
+            border-radius: 16px;
+            cursor: grab;
+            display: flex;
+            align-items: center;
+            font-weight: 500;
+            line-height: 1.5;
+        }
+        .p1-row:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .p1-row::before { content: "\f0c9"; font-family: "Font Awesome 6 Free"; font-weight: 900; margin-right: 20px; color: #cbd5e1; }
+
+        /* Part 4 Quiz */
+        .p4-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 25px;
+            background: #f8fafc;
+            border-radius: 16px;
+            margin-bottom: 15px;
+            border: 2px solid transparent;
+        }
+        .p4-item span { width: 65%; font-weight: 500; }
+        .p4-item select { width: 30%; margin-bottom: 0; padding: 10px; }
+        .p4-item.correct { background: #ecfdf5; border-color: var(--success); }
+        .p4-item.wrong { background: #fef2f2; border-color: var(--danger); }
+
+        /* Part 5 Matching */
+        .p5-game-box { border: 1px solid #e2e8f0; border-radius: 20px; padding: 25px; margin-bottom: 40px; }
+        .p5-zones { display: flex; gap: 25px; margin: 25px 0; }
+        .p5-zone {
+            flex: 1;
+            min-height: 200px;
+            background: #f8fafc;
+            border: 2px dashed #e2e8f0;
+            padding: 20px;
+            border-radius: 18px;
+        }
+        .p5-zone strong { display: block; margin-bottom: 15px; color: var(--secondary); font-size: 14px; text-transform: uppercase; }
+        .word-tag {
+            display: inline-block;
+            background: #fff;
+            padding: 10px 18px;
+            margin: 6px;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            cursor: pointer;
+            font-weight: 600;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+        .word-tag:hover { border-color: var(--primary); color: var(--primary); transform: scale(1.05); }
+        .answer-key {
+            background: #1e293b;
+            color: #fff;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            text-align: center;
+            display: none;
+            font-family: monospace;
+        }
+
+        /* BUTTONS */
+        .btn-wrap { display: flex; gap: 15px; margin-top: 30px; }
+        .btn-main {
+            padding: 16px 30px;
+            border-radius: 14px;
+            border: none;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 15px;
+        }
+        .btn-blue { background: var(--primary); color: white; }
+        .btn-blue:hover { opacity: 0.9; transform: translateY(-2px); }
+        .btn-ghost { background: #f1f5f9; color: var(--text-main); }
+        .btn-ghost:hover { background: #e2e8f0; }
+
+        .status-msg { margin-top: 25px; font-weight: 700; font-size: 18px; text-align: center; }
+        .text-win { color: var(--success); }
+        .text-fail { color: var(--danger); }
+
+        @media (max-width: 1024px) {
+            .sidebar { width: 80px; }
+            .logo-box span, .nav-link span { display: none; }
+            .main-wrapper { margin-left: 80px; padding: 30px; }
+        }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="logo-box"><i class="fas fa-bolt"></i><span>APTIS PRO HUNGNT192</span></div>
+        <nav class="nav-links">
+            <div class="nav-link"><i class="fas fa-headphones"></i><span>Listening</span></div>
+            <div class="nav-link"><i class="fas fa-microphone"></i><span>Speaking</span></div>
+            <div class="nav-link active"><i class="fas fa-book-open"></i><span>Reading</span></div>
+            <div class="nav-link"><i class="fas fa-pen-fancy"></i><span>Writing</span></div>
+        </nav>
+    </aside>
+
+    <main class="main-wrapper">
+        <header class="page-header">
+            <h1>Luyện Tập Reading</h1>
+            <div class="part-tabs">
+                <button class="tab-item active" onclick="switchPart('p1', this)">Part 1: Order</button>
+                <button class="tab-item" onclick="switchPart('p4', this)">Part 4: Quiz</button>
+                <button class="tab-item" onclick="switchPart('p5', this)">Part 5: Matching</button>
+            </div>
+        </header>
+
+        <div class="card">
+            <div id="p1-section" class="content-block">
+                <h3 style="margin-top:0"><i class="fas fa-align-left" style="color:var(--primary)"></i> Sắp xếp đoạn văn</h3>
+                <p style="color:var(--secondary)">Chọn chủ đề và kéo các câu vào đúng thứ tự logic.</p>
+                <select id="p1-topic" onchange="p1_load()"></select>
+                <div id="p1-list" class="p1-list"></div>
+                <div class="btn-wrap">
+                    <button class="btn-main btn-blue" onclick="p1_check()"><i class="fas fa-check"></i> Kiểm tra đáp án</button>
+                    <button class="btn-main btn-ghost" onclick="p1_load()"><i class="fas fa-sync"></i> Trộn lại</button>
+                </div>
+                <div id="p1-res" class="status-msg"></div>
+            </div>
+
+            <div id="p4-section" class="content-block" style="display:none">
+                <h3 style="margin-top:0"><i class="fas fa-list-check" style="color:var(--primary)"></i> Trắc nghiệm chọn lọc</h3>
+                <p style="color:var(--secondary)">Đọc câu hỏi và chọn nhân vật hoặc đáp án phù hợp nhất.</p>
+                <select id="p4-topic" onchange="p4_load()"></select>
+                <div id="p4-container"></div>
+                <div class="btn-wrap">
+                    <button class="btn-main btn-blue" onclick="p4_check()"><i class="fas fa-graduation-cap"></i> Chấm điểm bài làm</button>
+                    <button class="btn-main btn-ghost" onclick="p4_load()"><i class="fas fa-shuffle"></i> Thay đổi câu hỏi</button>
+                </div>
+                <div id="p4-res" class="status-msg"></div>
+            </div>
+
+            <div id="p5-section" class="content-block" style="display:none">
+                <h3 style="margin-top:0"><i class="fas fa-puzzle-piece" style="color:var(--primary)"></i> Ghép nối từ vựng</h3>
+                <p style="color:var(--secondary)">Sắp xếp các từ vào khung đáp án theo đúng thứ tự xuất hiện.</p>
+                <div id="p5-all-games"></div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // ------------------ DATA ------------------
+        const p1_db = {
+            "The first American woman in Space": ["With the support from her parents, she went to university to study science","Her degree enabled her to get a place on the training course in USA","This is about space, and it helps Mae to become a member of a research team","As part of this group, she traveled to space and did a lot of experiments","Some of those were about growing plants and some animals in a spaceship"],
+            "Music show at the park": ["The local authority planned, sponsored, and paid for everything.","Because of this, it was free and five thousand people attended it.","Many of them arrived early and visited nearby shops while they were waiting for it to begin.","The staff there had a busy day, but they were able to close early and watch the famous singer perform.","He performed for two hours and everyone had great fun"],
+            "Making films": ["The films in the past were different from what we see today.","This is because the movies were black and white, and there was no sound.","In addition to these technical limitations, film producers also had a very low budget","This lack of money mostly affected actors, and they didn't earn much","Now things have changed, some of them have earned millions of dollars"],
+            "Weekend activities": ["It was on Saturday morning, and there was a ten-mile race for adults.","Sixty men and women ran in this, and Ms Kamur won with the fastest time.","After she received the prize, it was time for the children to play and compete.","These activities included playing football, jumping, and swimming, and they had lots of fun.","After that, all of them were hungry so they ate and drank with their parents"],
+            "New cafe in town": ["It was full of people, and the staff were working hard on their 1st day","Despite the crowd, they found me a nice table and brought me a menu","When I first look at the menu, I was disappointed since I hoped to see a variety of dishes","I had to choose one of those so I decided to choose the most expensive one","It was really good with cheese topping and I would come back to this place"],
+            "History of travel": ["In the past, only very rich people could afford to travel long distances.","The invention of cars and trains had changed everything and made travelling cheaper.","After these two means of transport, travelling becomes even easier with aeroplanes.","Because flying with them is so fast, more people now go abroad for holiday and business.","It is more convenient to travel to other part of the world due to the improvement in transports"],
+            "Singer": ["Before becoming famous at a young age, he studied art and music at high school","During this education, he started to perform on stage.","During his performances on stage, he likes to wear colorful clothes and paint his face.","This strange ways of dressing and his songs attracted people's attention","They started to follow him on social media and he is now very famous"],
+            "End of term project": ["For end of term project, you need to choose at least 2 of these","It needs to include relevant images and your own text about the topic","Then you need to use images and written work to create a presentation","Your presentation offer your key points and you have around 5 minutes to talk","After this time, other students are able to ask questions and you need to answer them"],
+            "College welcoming day": ["The day will begin at 10 a.m in the morning with a short presentation.","At the end of this talk, you will meet the heads of departments and teachers.","These staff members will give you a guided tour in the buildings and our sport facilities in small groups","During this visit, you will need to stay with these students until lunch break.","This meal will be provided on the second floor of the engineering building"]
+        };
+
+        const p4_db = [
+            { t: "Topic 1: Music Festival", a: ["Nadia","Cora","Alek","Farhan"], q: [{q:"Who is disappointed with the weather?", a:"Nadia"}, {q:"Who enjoyed the final day?", a:"Nadia"}, {q:"Who was not impressed overall?", a:"Cora"}, {q:"Who thought it was expensive?", a:"Alek"}, {q:"Who likes meeting old friends?", a:"Farhan"}] },
+            { t: "Topic 2: Childhood Activities", a: ["Odilia","Chris","Jan","Shelly"], q: [{q:"Who enjoyed playing games with children?", a:"Odilia"}, {q:"Who thought traditional games were simpler?", a:"Odilia"}, {q:"Who preferred reading books as a child?", a:"Jan"}, {q:"Who enjoyed doing arts as a child?", a:"Shelly"}] },
+            { t: "Topic 3: Career Journey", a: ["When I finished school","Straight to university","As a child","After school"], q: [{q:"Benefited from working for free?", a:"When I finished school"}, {q:"Did not want to change careers?", a:"Straight to university"}, {q:"Thinks training was too long?", a:"As a child"}, {q:"Enjoyed flexible work environment?", a:"After school"}] },
+            { t: "Topic 4: Volunteering", a: ["Boyd","Chinua","Emilia","Noah"], q: [{q:"Volunteering is good for culture?", a:"Boyd"}, {q:"Volunteering has physical benefits?", a:"Chinua"}, {q:"Can help advance a career?", a:"Emilia"}, {q:"Can be helped by giving money?", a:"Noah"}] }
+        ];
+
+        const p5_db = [
+            { c: ["a way of life","benefits","financial","challenges","habits","people","solutions"], n: ["computer","river","music","school","banana","planet","camera","window","pencil"] },
+            { c: ["mountain","achievement","publicising","revealation","wrong","focus","relationships"], n: ["airplane","sandwich","library","football","painter","diamond","airport"] },
+            { c: ["gender","acknowledging","man","career","people","balance","beneficial"], n: ["hospital","waterfall","internet","chocolate","bicycle","sunlight"] }
+        ];
+
+        // ------------------ NAVIGATION ------------------
+        function switchPart(part, btn) {
+            document.querySelectorAll('.content-block').forEach(b => b.style.display = 'none');
+            document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+            document.getElementById(part + '-section').style.display = 'block';
+            btn.classList.add('active');
+        }
+
+        // ------------------ PART 1 LOGIC ------------------
+        let p1_curr = [];
+        const p1_sel = document.getElementById('p1-topic');
+        Object.keys(p1_db).forEach(k => p1_sel.add(new Option(k, k)));
+
+        function p1_load() {
+            const key = p1_sel.value;
+            p1_curr = [...p1_db[key]].sort(() => Math.random() - 0.5);
+            p1_render();
+            document.getElementById('p1-res').innerText = '';
+        }
+
+        function p1_render() {
+            const list = document.getElementById('p1-list');
+            list.innerHTML = '';
+            p1_curr.forEach((txt, i) => {
+                const div = document.createElement('div');
+                div.className = 'p1-row'; div.textContent = txt; div.draggable = true;
+                div.ondragstart = (e) => e.dataTransfer.setData('text', i);
+                div.ondragover = (e) => e.preventDefault();
+                div.ondrop = (e) => {
+                    const from = e.dataTransfer.getData('text');
+                    const item = p1_curr.splice(from, 1)[0];
+                    p1_curr.splice(i, 0, item);
+                    p1_render();
+                };
+                list.appendChild(div);
+            });
+        }
+
+        function p1_check() {
+            const key = p1_sel.value;
+            const correct = p1_db[key];
+            const isOk = p1_curr.every((v, i) => v === correct[i]);
+            const res = document.getElementById('p1-res');
+            res.innerHTML = isOk ? '<span class="text-win">🏆 Chính xác! Bạn rất giỏi.</span>' : '<span class="text-fail">❌ Thứ tự chưa đúng, hãy kiểm tra lại nhé.</span>';
+        }
+
+        // ------------------ PART 4 LOGIC ------------------
+        const p4_sel = document.getElementById('p4-topic');
+        p4_db.forEach((d, i) => p4_sel.add(new Option(d.t, i)));
+
+        function p4_load() {
+            const data = p4_db[p4_sel.value];
+            const cont = document.getElementById('p4-container');
+            cont.innerHTML = '';
+            const qs = [...data.q].sort(() => Math.random() - 0.5);
+            qs.forEach((item, i) => {
+                const div = document.createElement('div');
+                div.className = 'p4-item'; div.id = `p4-row-${i}`;
+                div.innerHTML = `<span>${item.q}</span> <select data-ans="${item.a}"><option value="">-- Chọn --</option>${data.a.map(a => `<option value="${a}">${a}</option>`).join('')}</select>`;
+                cont.appendChild(div);
+            });
+            document.getElementById('p4-res').innerText = '';
+        }
+
+        function p4_check() {
+            let score = 0;
+            const rows = document.querySelectorAll('.p4-item');
+            rows.forEach(row => {
+                const sel = row.querySelector('select');
+                if(sel.value === sel.dataset.ans) { score++; row.classList.add('correct'); row.classList.remove('wrong'); }
+                else { row.classList.add('wrong'); row.classList.remove('correct'); }
+            });
+            document.getElementById('p4-res').innerHTML = `<span class="${score === rows.length ? 'text-win' : 'text-fail'}">Kết quả: ${score}/${rows.length} câu đúng.</span>`;
+        }
+
+        // ------------------ PART 5 LOGIC ------------------
+        function p5_init() {
+            const cont = document.getElementById('p5-all-games');
+            cont.innerHTML = '';
+            p5_db.forEach((set, idx) => {
+                const game = document.createElement('div');
+                game.className = 'p5-game-box';
+                game.innerHTML = `
+                    <h4># Câu hỏi ${idx+1}</h4>
+                    <button class="btn-main btn-ghost" style="padding: 8px 15px; font-size: 13px" onmousedown="this.nextElementSibling.style.display='block'" onmouseup="this.nextElementSibling.style.display='none'" onmouseleave="this.nextElementSibling.style.display='none'">Giữ để xem gợi ý</button>
+                    <div class="answer-key">${set.c.join(' → ')}</div>
+                    <div class="p5-zones">
+                        <div class="p5-zone bank"><strong>Kho từ vựng</strong></div>
+                        <div class="p5-zone ans"><strong>Đáp án của bạn</strong></div>
+                    </div>
+                    <div class="btn-wrap">
+                        <button class="btn-main btn-blue" onclick="p5_check(this, ${idx}, true)">Check Thứ tự</button>
+                    </div>
+                `;
+                cont.appendChild(game);
+                const bank = game.querySelector('.bank');
+                const words = [...set.c, ...set.n].sort(() => Math.random() - 0.5);
+                words.forEach(w => {
+                    const tag = document.createElement('div');
+                    tag.className = 'word-tag'; tag.textContent = w;
+                    tag.onclick = () => {
+                        if(tag.parentElement === bank) {
+                            if(game.querySelector('.ans').querySelectorAll('.word-tag').length < set.c.length) game.querySelector('.ans').appendChild(tag);
+                        } else bank.appendChild(tag);
+                    };
+                    bank.appendChild(tag);
+                });
+            });
+        }
+
+        window.p5_check = (btn, idx) => {
+            const set = p5_db[idx];
+            const user = [...btn.closest('.p5-game-box').querySelectorAll('.ans .word-tag')].map(e => e.textContent);
+            const isOk = user.length === set.c.length && user.every((v, i) => v === set.c[i]);
+            alert(isOk ? "Tuyệt vời! Bạn đã ghép đúng thứ tự." : "Rất tiếc, danh sách từ hoặc thứ tự chưa chính xác.");
+        };
+
+        // Khởi tạo
+        p1_load(); p4_load(); p5_init();
+    </script>
+</body>
+</html>
