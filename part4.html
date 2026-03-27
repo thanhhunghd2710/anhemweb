@@ -1,1 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test Part 4</title>
 
+<style>
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: #333;
+  }
+
+  h1 {
+    text-align: center;
+    color: white;
+    margin: 30px 0 10px;
+    font-size: 32px;
+    letter-spacing: 1px;
+  }
+
+  .container {
+    max-width: 900px;
+    margin: 20px auto;
+    background: #fff;
+    padding: 25px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    animation: fadeIn 0.5s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .topic-select {
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    margin-bottom: 20px;
+    font-size: 16px;
+    transition: 0.3s;
+  }
+
+  .topic-select:focus {
+    border-color: #667eea;
+    outline: none;
+  }
+
+  .question {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    background: #f9fafc;
+    transition: 0.2s;
+  }
+
+  .question:hover {
+    background: #eef2ff;
+  }
+
+  .question span {
+    width: 70%;
+    font-size: 15px;
+  }
+
+  .answer {
+    padding: 6px 8px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    transition: 0.2s;
+  }
+
+  .answer:focus {
+    border-color: #667eea;
+    outline: none;
+  }
+
+  .btn {
+    margin-top: 20px;
+    padding: 12px;
+    width: 100%;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #4CAF50, #43a047);
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+
+  .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+  }
+
+  .result {
+    margin-top: 15px;
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+  }
+
+  .result.good { color: #4CAF50; }
+  .result.bad { color: #f44336; }
+
+</style>
+</head>
+
+<body>
+
+<h1>🎯 Quiz Game</h1>
+
+<div class="container">
+
+  <select id="topicSelect" class="topic-select">
+    <option value="">-- Choose Topic --</option>
+  </select>
+
+  <div id="questions"></div>
+
+  <button class="btn" onclick="checkAnswers()">Check Answers</button>
+
+  <div id="result" class="result"></div>
+
+</div>
+
+<script>
+const data = [
+  {
+    topic: "Topic 1: Music Festival",
+    answers: ["Nadia","Cora","Alek","Farhan"],
+    questions: [
+      { q: "Who is disappointed with the weather?", a: "Nadia" },
+      { q: "Who enjoyed the final day of the music event?", a: "Nadia" },
+      { q: "Who was not impressed by the event overall?", a: "Cora" },
+      { q: "Who enjoyed all the music at the event?", a: "Alek" },
+      { q: "Who thought the event was expensive?", a: "Alek" },
+      { q: "Who likes meeting old friends?", a: "Farhan" },
+      { q: "Who thought the location was not good?", a: "Farhan" }
+    ]
+  },
+  {
+    topic: "Topic 2: Childhood Activities",
+    answers: ["Odilia","Chris","Jan","Shelly"],
+    questions: [
+      { q: "Who enjoyed playing games with their children?", a: "Odilia" },
+      { q: "Who thought traditional games were much simpler?", a: "Odilia" },
+      { q: "Who enjoyed playing with other children as a child?", a: "Chris" },
+      { q: "Who preferred reading books as a child?", a: "Jan" },
+      { q: "Who enjoyed playing modern games?", a: "Jan" },
+      { q: "Who enjoyed doing arts as a child?", a: "Shelly" },
+      { q: "Who wished they could spend more time outdoors?", a: "Shelly" }
+    ]
+  },
+  {
+    topic: "Topic 3: Career",
+    answers: ["When I finished school","I went straight to university","As a child","After school"],
+    questions: [
+      { q: "Who benefited from working for free?", a: "When I finished school" },
+      { q: "Who did not want to change careers?", a: "I went straight to university" },
+      { q: "Who enjoyed working when training?", a: "I went straight to university" },
+      { q: "Who enjoyed doing things with their hands?", a: "As a child" },
+      { q: "Who thinks their training was too long?",
