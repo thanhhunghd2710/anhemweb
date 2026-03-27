@@ -118,7 +118,7 @@
 
 <body>
 
-<h1>🎯 Quiz Game</h1>
+<h1>🎯 Test Part 4</h1>
 
 <div class="container">
 
@@ -170,4 +170,99 @@ const data = [
       { q: "Who did not want to change careers?", a: "I went straight to university" },
       { q: "Who enjoyed working when training?", a: "I went straight to university" },
       { q: "Who enjoyed doing things with their hands?", a: "As a child" },
-      { q: "Who thinks their training was too long?",
+      { q: "Who thinks their training was too long?", a: "As a child" },
+      { q: "Who enjoyed flexible work environment?", a: "After school" },
+      { q: "Who found it hard to get first job?", a: "After school" }
+    ]
+  },
+  {
+    topic: "Topic 4: Volunteering",
+    answers: ["Boyd","Chinua","Emilia","Noah"],
+    questions: [
+      { q: "Who thinks volunteering is good for culture?", a: "Boyd" },
+      { q: "Who thinks volunteering should help local communities?", a: "Boyd" },
+      { q: "Who thinks volunteering has physical benefits?", a: "Chinua" },
+      { q: "Who thinks volunteering is a good reason to travel?", a: "Chinua" },
+      { q: "Who thinks volunteering can help advance a career?", a: "Emilia" },
+      { q: "Who thinks volunteering is a good way to make friends?", a: "Emilia" },
+      { q: "Who thinks volunteering can be helped by giving money?", a: "Noah" }
+    ]
+  }
+];
+
+function shuffle(array) {
+  return array.sort(() => Math.random() - 0.5);
+}
+
+const topicSelect = document.getElementById("topicSelect");
+const questionsDiv = document.getElementById("questions");
+let currentTopic = null;
+
+// load topics
+data.forEach((t, i) => {
+  let opt = document.createElement("option");
+  opt.value = i;
+  opt.text = t.topic;
+  topicSelect.appendChild(opt);
+});
+
+// change topic
+topicSelect.onchange = () => {
+  questionsDiv.innerHTML = "";
+  document.getElementById("result").innerText = "";
+
+  if (topicSelect.value === "") return;
+
+  currentTopic = JSON.parse(JSON.stringify(data[topicSelect.value]));
+
+  currentTopic.questions = shuffle(currentTopic.questions);
+
+  currentTopic.questions.forEach((item, index) => {
+    let div = document.createElement("div");
+    div.className = "question";
+
+    let q = document.createElement("span");
+    q.innerText = item.q;
+
+    let select = document.createElement("select");
+    select.className = "answer";
+    select.id = "q_" + index;
+
+    let defaultOpt = document.createElement("option");
+    defaultOpt.text = "-- Select --";
+    defaultOpt.value = "";
+    select.appendChild(defaultOpt);
+
+    let options = shuffle([...currentTopic.answers]);
+    options.forEach(opt => {
+      let option = document.createElement("option");
+      option.value = opt;
+      option.text = opt;
+      select.appendChild(option);
+    });
+
+    div.appendChild(q);
+    div.appendChild(select);
+    questionsDiv.appendChild(div);
+  });
+};
+
+function checkAnswers() {
+  if (!currentTopic) return;
+
+  let correct = 0;
+
+  currentTopic.questions.forEach((item, index) => {
+    let select = document.getElementById("q_" + index);
+    if (select.value === item.a) correct++;
+  });
+
+  let result = document.getElementById("result");
+  result.innerText = `Result: ${correct} / ${currentTopic.questions.length}`;
+
+  result.className = "result " + (correct > currentTopic.questions.length / 2 ? "good" : "bad");
+}
+</script>
+
+</body>
+</html>
